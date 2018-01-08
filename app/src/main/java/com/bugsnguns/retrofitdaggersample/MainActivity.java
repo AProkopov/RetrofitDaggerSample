@@ -46,9 +46,23 @@ public class MainActivity extends AppCompatActivity {
         Timber.plant(new Timber.DebugTree());
 
         File cacheFile = new File(this.getCacheDir(), "HttpCache");
+        File cacheFileForOffline = new File(this.getCacheDir(), "HttpCacheOffline");
         cacheFile.mkdirs();
+        cacheFileForOffline.mkdirs();
 
-        Cache cache = new Cache(cacheFile, 10 * 1000 * 1000); //10 MB
+        Cache cache = new Cache(cacheFile, 10 * 1000 * 1000);//10 MB
+        Cache cacheOffline = new Cache(cacheFileForOffline, 10 * 1000 * 1000);//10 MB
+
+        Cache cacheTarget;
+
+        //Если директория HttpCache существует
+        if (cacheFile != null) {
+            if (noConnection) {
+                cacheTarget = cacheOffline;
+            } else {
+                cacheTarget = cache;
+            }
+        } else cacheTarget = cache;
 
         HttpLoggingInterceptor httpLoggingInterceptor = new
                 HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
